@@ -98,13 +98,42 @@ def _extract_zip(zip_path: str, workspace: Path) -> None:
 
 
 def _copy_uploaded_files(scan, workspace: Path) -> None:
-    """Copy the uploaded source_file into the sandboxed workspace."""
+    """Copy the uploaded source_file into the sandboxed workspace.
+
+    Also cleans up pasted code: strips trailing whitespace per line and
+    removes common leading indentation (dedent) so that analyzers like
+    Bandit/Semgrep can parse the file correctly.
+    """
     if not scan.source_file:
         return
 
     source_path = Path(scan.source_file.path)
     destination = workspace / source_path.name
-    shutil.copy2(source_path, destination)
+
+    # Read, clean, and write instead of raw copy
+    try:
+        content = source_path.read_text(encoding="utf-8", errors="replace")
+        lines = [line.rstrip() for line in content.splitlines()]
+        # Compute indentation per non-empty line
+        non_empty = [l for l in lines if l]
+        if non_empty:
+            indents = [len(l) - len(l.lstrip()) for l in non_empty]
+            # Use the most common indent (mode) as the base to strip,
+            # so one unindented line doesn't break the whole dedent.
+            from collections import Counter  # noqa: PLC0415
+            indent_counts = Counter(indents)
+            # Remove indent=0 if most lines have indent > 0
+            non_zero = {k: v for k, v in indent_counts.items() if k > 0}
+            if non_zero and indent_counts.get(0, 0) < sum(non_zero.values()):
+                min_indent = min(non_zero.keys())
+            else:
+                min_indent = min(indents)
+            if min_indent > 0:
+                lines = [l[min_indent:] if l[:min_indent].strip() == "" else l for l in lines]
+        destination.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    except Exception:  # noqa: BLE001
+        # Fallback to raw copy if cleaning fails
+        shutil.copy2(source_path, destination)
 
 
 def _dispatch_analyzer_chord(scan_id: str, languages: list) -> None:

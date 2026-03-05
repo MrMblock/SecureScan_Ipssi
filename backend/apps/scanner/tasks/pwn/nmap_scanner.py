@@ -44,8 +44,8 @@ def run_nmap(target_url: str) -> list[dict]:
         nm = nmap.PortScanner()
         nm.scan(
             hosts=host,
-            arguments="-sV --top-ports 1000 --script=vuln -T4 --open",
-            timeout=120,
+            arguments="-sV --top-ports 100 -T4 --open",
+            timeout=60,
         )
 
         for scanned_host in nm.all_hosts():

@@ -37,9 +37,11 @@ def run_nuclei(target_url: str, progress_callback: Callable | None = None) -> li
                 "-u", target_url,
                 "-jsonl",
                 "-silent",
-                "-rate-limit", "50",
-                "-timeout", "10",
-                "-retries", "1",
+                "-rate-limit", "100",
+                "-bulk-size", "50",
+                "-concurrency", "25",
+                "-timeout", "7",
+                "-retries", "0",
                 "-severity", "critical,high,medium,low",
                 "-exclude-type", "dns",
             ],
@@ -67,7 +69,7 @@ def run_nuclei(target_url: str, progress_callback: Callable | None = None) -> li
             if progress_callback and line_count % 5 == 0:
                 progress_callback(len(findings))
 
-        proc.wait(timeout=300)
+        proc.wait(timeout=120)
 
         if progress_callback:
             progress_callback(len(findings))
@@ -75,7 +77,7 @@ def run_nuclei(target_url: str, progress_callback: Callable | None = None) -> li
     except FileNotFoundError:
         logger.warning("nuclei binary not found — skipping nuclei scan")
     except subprocess.TimeoutExpired:
-        logger.error("nuclei scan timed out after 300s")
+        logger.error("nuclei scan timed out after 120s")
         if proc:
             proc.kill()
     except Exception as exc:  # noqa: BLE001

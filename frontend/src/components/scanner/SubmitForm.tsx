@@ -112,7 +112,17 @@ export default function SubmitForm() {
           setErrorMsg(t("app.submitForm.errorPasteCode"));
           return;
         }
-        const blob = new Blob([pastedCode], { type: "text/plain" });
+        // Clean pasted code: strip trailing whitespace per line, then dedent
+        const rawLines = pastedCode.split("\n").map((l) => l.trimEnd());
+        const nonEmptyLines = rawLines.filter((l) => l.length > 0);
+        const minIndent = nonEmptyLines.reduce((min, l) => {
+          const match = l.match(/^(\s+)/);
+          return match ? Math.min(min, match[1].length) : 0;
+        }, Infinity);
+        const cleanCode = minIndent > 0 && isFinite(minIndent)
+          ? rawLines.map((l) => l.slice(minIndent)).join("\n")
+          : rawLines.join("\n");
+        const blob = new Blob([cleanCode], { type: "text/plain" });
         const file = new File([blob], pastedFilename || "code.txt", { type: "text/plain" });
         formData.append("source_type", "files");
         formData.append("source_file", file);
