@@ -1,4 +1,4 @@
-.PHONY: up down build restart logs migrate makemigrations createsuperuser shell lint test fmt install install-frontend install-backend setup
+.PHONY: up down build restart logs migrate makemigrations createsuperuser shell lint test test-backend test-frontend test-cli test-e2e fmt install install-frontend install-backend setup
 
 # ── Setup initial (après un git pull) ────────────────────────────────────────
 
@@ -58,6 +58,21 @@ lint:
 fmt:
 	docker compose exec backend ruff format .
 
-test:
-	docker compose exec backend pytest
-	docker compose exec frontend pnpm build
+## Lance tous les tests (backend + frontend + CLI)
+test: test-backend test-frontend test-cli
+
+## Tests backend (pytest dans le conteneur Docker)
+test-backend:
+	docker compose exec backend poetry run pytest
+
+## Tests frontend (vitest)
+test-frontend:
+	cd frontend && pnpm test:run
+
+## Tests CLI (pytest local)
+test-cli:
+	cd cli && pytest
+
+## Tests end-to-end (Playwright)
+test-e2e:
+	cd frontend && pnpm exec playwright test

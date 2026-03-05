@@ -21,7 +21,10 @@ def _run_git(workspace: str, *args: str) -> str:
         timeout=30,
     )
     if result.returncode != 0:
-        raise RuntimeError(f"git {' '.join(args)} failed: {result.stderr.strip()}")
+        raise RuntimeError(
+            f"git {' '.join(args)} failed (rc={result.returncode}): "
+            f"stderr={result.stderr.strip()} stdout={result.stdout.strip()}"
+        )
     return result.stdout.strip()
 
 
@@ -159,8 +162,28 @@ def apply_fix_and_create_pr(finding, github_token: str = "") -> dict:
 
     # Stage and commit
     _run_git(workspace, "add", finding.file_path)
-    commit_msg = f"fix: {finding.title}\n\nOWASP: {finding.owasp_category}\nSeverity: {finding.severity}\nTool: {finding.tool}\n\nAI-generated fix by SecureScan"
-    _run_git(workspace, "commit", "-m", commit_msg)
+    commit_msg = (
+        f"fix: {finding.title}\n\n"
+        f"OWASP: {finding.owasp_category}\n"
+        f"Severity: {finding.severity}\n"
+        f"Tool: {finding.tool}\n\n"
+        f"AI-generated fix by SecureScan"
+    )
+    # Check if there are staged changes before committing
+    diff_status = _run_git(workspace, "diff", "--cached", "--name-only")
+    if diff_status:
+        msg_file = os.path.join(workspace, ".git", "COMMIT_MSG")
+        with open(msg_file, "w") as f:
+            f.write(commit_msg)
+        try:
+            _run_git(workspace, "commit", "-F", msg_file)
+        finally:
+            try:
+                os.unlink(msg_file)
+            except OSError:
+                pass
+    else:
+        logger.info("No staged changes — fix already applied on branch %s", branch_name)
     commit_sha = _run_git(workspace, "log", "-1", "--format=%H")
 
     # Push using GIT_ASKPASS to inject the token via env — never written to .git/config.
@@ -174,7 +197,13 @@ def apply_fix_and_create_pr(finding, github_token: str = "") -> dict:
         askpass_script = tempfile.NamedTemporaryFile(
             mode="w", suffix=".sh", delete=False, dir=workspace,
         )
-        askpass_script.write(f'#!/bin/sh\necho "x-access-token:{github_token}"\n')
+        askpass_script.write(
+            f'#!/bin/sh\n'
+            f'case "$1" in\n'
+            f'  *Username*) echo "x-access-token" ;;\n'
+            f'  *) echo "{github_token}" ;;\n'
+            f'esac\n'
+        )
         askpass_script.close()
         os.chmod(askpass_script.name, 0o700)
 
