@@ -1,7 +1,7 @@
 """DAST module: Reflected XSS Testing (OWASP A05)."""
 
 import logging
-from urllib.parse import urlencode, urlparse, parse_qs, urlunparse
+from urllib.parse import parse_qs, urlparse, urlunparse
 
 import httpx
 

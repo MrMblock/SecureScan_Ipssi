@@ -11,12 +11,32 @@ PATTERNS = [
     {
         "id": "sqli_fstring",
         "triggers": {"rule_ids": ["sql-injection", "hardcoded-sql", "S608", "tainted-sql", "B608"]},
-        "match": lambda code: bool(re.search(r"""(f['"]|['"].*%s.*%|['"].*\+\s*\w+.*['"]|\.format\s*\(|\.[ ]*\$)\s*.*(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE)""", code, re.IGNORECASE | re.DOTALL)
-                               or re.search(r"""(SELECT|INSERT|UPDATE|DELETE).*?(f['"]|['"].*\{|\+\s*\w+|\.format\s*\(|\.[ ]*\$)""", code, re.IGNORECASE | re.DOTALL)),
+        "match": lambda code: bool(
+            re.search(
+                r"""(f['"]|['"].*%s.*%|['"].*\+\s*\w+.*['"]"""
+                r"""|\.format\s*\(|\.[ ]*\$)\s*"""
+                r""".*(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE)""",
+                code, re.IGNORECASE | re.DOTALL,
+            )
+            or re.search(
+                r"""(SELECT|INSERT|UPDATE|DELETE)"""
+                r""".*?(f['"]|['"].*\{|\+\s*\w+"""
+                r"""|\.format\s*\(|\.[ ]*\$)""",
+                code, re.IGNORECASE | re.DOTALL,
+            )
+        ),
         "fix": lambda code: _fix_sqli(code),
         "explanation": {
-            "en": "Replaced string interpolation in SQL query with parameterized query using placeholders. This prevents SQL injection by separating code from data.",
-            "fr": "Remplacement de l'interpolation de chaîne dans la requête SQL par une requête paramétrée. Cela empêche l'injection SQL en séparant le code des données.",
+            "en": (
+                "Replaced string interpolation in SQL query with "
+                "parameterized query using placeholders. This prevents "
+                "SQL injection by separating code from data."
+            ),
+            "fr": (
+                "Remplacement de l'interpolation de chaîne dans la "
+                "requête SQL par une requête paramétrée. Cela empêche "
+                "l'injection SQL en séparant le code des données."
+            ),
         },
     },
     # 2. XSS innerHTML → textContent
@@ -26,8 +46,16 @@ PATTERNS = [
         "match": lambda code: ".innerHTML" in code and "=" in code,
         "fix": lambda code: code.replace(".innerHTML", ".textContent"),
         "explanation": {
-            "en": "Replaced innerHTML with textContent to prevent XSS. textContent safely sets text without parsing HTML.",
-            "fr": "Remplacement de innerHTML par textContent pour prévenir les XSS. textContent insère du texte sans interpréter le HTML.",
+            "en": (
+                "Replaced innerHTML with textContent to prevent "
+                "XSS. textContent safely sets text without "
+                "parsing HTML."
+            ),
+            "fr": (
+                "Remplacement de innerHTML par textContent pour "
+                "prévenir les XSS. textContent insère du texte "
+                "sans interpréter le HTML."
+            ),
         },
     },
     # 3. document.write → DOM API
@@ -41,8 +69,16 @@ PATTERNS = [
             code,
         ),
         "explanation": {
-            "en": "Replaced document.write() with insertAdjacentHTML() which is safer and doesn't overwrite the entire document.",
-            "fr": "Remplacement de document.write() par insertAdjacentHTML() qui est plus sûr et n'écrase pas le document entier.",
+            "en": (
+                "Replaced document.write() with "
+                "insertAdjacentHTML() which is safer and doesn't "
+                "overwrite the entire document."
+            ),
+            "fr": (
+                "Remplacement de document.write() par "
+                "insertAdjacentHTML() qui est plus sûr et n'écrase "
+                "pas le document entier."
+            ),
         },
     },
     # 4. eval() → JSON.parse
@@ -52,8 +88,16 @@ PATTERNS = [
         "match": lambda code: bool(re.search(r"\beval\s*\(", code)),
         "fix": lambda code: re.sub(r"\beval\s*\((.+?)\)", r"JSON.parse(\1)", code),
         "explanation": {
-            "en": "Replaced eval() with JSON.parse() to prevent arbitrary code execution. JSON.parse only parses data, not code.",
-            "fr": "Remplacement de eval() par JSON.parse() pour empêcher l'exécution de code arbitraire. JSON.parse ne traite que les données.",
+            "en": (
+                "Replaced eval() with JSON.parse() to prevent "
+                "arbitrary code execution. JSON.parse only parses "
+                "data, not code."
+            ),
+            "fr": (
+                "Remplacement de eval() par JSON.parse() pour "
+                "empêcher l'exécution de code arbitraire. "
+                "JSON.parse ne traite que les données."
+            ),
         },
     },
     # 5. exec() → subprocess (Python)
@@ -67,8 +111,16 @@ PATTERNS = [
             code,
         ),
         "explanation": {
-            "en": "Replaced exec() with subprocess.run() using shell=False. This prevents shell injection by not interpreting shell metacharacters.",
-            "fr": "Remplacement de exec() par subprocess.run() avec shell=False. Cela empêche l'injection shell en n'interprétant pas les métacaractères.",
+            "en": (
+                "Replaced exec() with subprocess.run() using "
+                "shell=False. This prevents shell injection by not "
+                "interpreting shell metacharacters."
+            ),
+            "fr": (
+                "Remplacement de exec() par subprocess.run() avec "
+                "shell=False. Cela empêche l'injection shell en "
+                "n'interprétant pas les métacaractères."
+            ),
         },
     },
     # 6. os.system → subprocess.run
@@ -78,8 +130,16 @@ PATTERNS = [
         "match": lambda code: "os.system(" in code,
         "fix": lambda code: _fix_os_system(code),
         "explanation": {
-            "en": "Replaced os.system() with subprocess.run() using shlex.split(). This avoids shell injection by properly splitting command arguments.",
-            "fr": "Remplacement de os.system() par subprocess.run() avec shlex.split(). Cela évite l'injection shell en séparant correctement les arguments.",
+            "en": (
+                "Replaced os.system() with subprocess.run() using "
+                "shlex.split(). This avoids shell injection by "
+                "properly splitting command arguments."
+            ),
+            "fr": (
+                "Remplacement de os.system() par subprocess.run() "
+                "avec shlex.split(). Cela évite l'injection shell "
+                "en séparant correctement les arguments."
+            ),
         },
     },
     # 7. Hardcoded secret → env var
@@ -92,8 +152,16 @@ PATTERNS = [
         )),
         "fix": lambda code: _fix_hardcoded_secret(code),
         "explanation": {
-            "en": "Replaced hardcoded secret with environment variable lookup. Secrets should never be committed to source code.",
-            "fr": "Remplacement du secret codé en dur par une variable d'environnement. Les secrets ne doivent jamais être dans le code source.",
+            "en": (
+                "Replaced hardcoded secret with environment "
+                "variable lookup. Secrets should never be "
+                "committed to source code."
+            ),
+            "fr": (
+                "Remplacement du secret codé en dur par une "
+                "variable d'environnement. Les secrets ne doivent "
+                "jamais être dans le code source."
+            ),
         },
     },
     # 8. MD5/SHA1 → SHA256
@@ -101,10 +169,22 @@ PATTERNS = [
         "id": "weak_hash",
         "triggers": {"rule_ids": ["md5", "sha1", "B303", "B304"]},
         "match": lambda code: bool(re.search(r"\b(md5|sha1)\b", code, re.IGNORECASE)),
-        "fix": lambda code: re.sub(r"\bmd5\b", "sha256", re.sub(r"\bsha1\b", "sha256", code, flags=re.IGNORECASE), flags=re.IGNORECASE),
+        "fix": lambda code: re.sub(
+            r"\bmd5\b", "sha256",
+            re.sub(r"\bsha1\b", "sha256", code, flags=re.IGNORECASE),
+            flags=re.IGNORECASE,
+        ),
         "explanation": {
-            "en": "Replaced weak hash algorithm (MD5/SHA1) with SHA-256. MD5 and SHA1 are cryptographically broken and vulnerable to collision attacks.",
-            "fr": "Remplacement de l'algorithme de hachage faible (MD5/SHA1) par SHA-256. MD5 et SHA1 sont cryptographiquement cassés.",
+            "en": (
+                "Replaced weak hash algorithm (MD5/SHA1) with "
+                "SHA-256. MD5 and SHA1 are cryptographically "
+                "broken and vulnerable to collision attacks."
+            ),
+            "fr": (
+                "Remplacement de l'algorithme de hachage faible "
+                "(MD5/SHA1) par SHA-256. MD5 et SHA1 sont "
+                "cryptographiquement cassés."
+            ),
         },
     },
     # 9. DEBUG=True → False
@@ -114,8 +194,16 @@ PATTERNS = [
         "match": lambda code: bool(re.search(r"\bDEBUG\s*=\s*True\b", code)),
         "fix": lambda code: re.sub(r"\bDEBUG\s*=\s*True\b", "DEBUG = False", code),
         "explanation": {
-            "en": "Set DEBUG to False. Debug mode in production exposes sensitive information like stack traces and configuration details.",
-            "fr": "Passage de DEBUG à False. Le mode debug en production expose des informations sensibles comme les traces d'erreurs.",
+            "en": (
+                "Set DEBUG to False. Debug mode in production "
+                "exposes sensitive information like stack traces "
+                "and configuration details."
+            ),
+            "fr": (
+                "Passage de DEBUG à False. Le mode debug en "
+                "production expose des informations sensibles "
+                "comme les traces d'erreurs."
+            ),
         },
     },
     # 10. CORS * → explicit origins
@@ -125,19 +213,40 @@ PATTERNS = [
         "match": lambda code: bool(re.search(r"""['\"]\*['\"]""", code)) and "cors" in code.lower(),
         "fix": lambda code: re.sub(r"""['\"](\*)['\"]""", '"https://your-domain.com"', code),
         "explanation": {
-            "en": "Replaced CORS wildcard (*) with an explicit origin. Wildcard CORS allows any website to make requests to your API.",
-            "fr": "Remplacement du wildcard CORS (*) par une origine explicite. Le wildcard permet à n'importe quel site d'accéder à votre API.",
+            "en": (
+                "Replaced CORS wildcard (*) with an explicit "
+                "origin. Wildcard CORS allows any website to make "
+                "requests to your API."
+            ),
+            "fr": (
+                "Remplacement du wildcard CORS (*) par une "
+                "origine explicite. Le wildcard permet à "
+                "n'importe quel site d'accéder à votre API."
+            ),
         },
     },
     # 11. Cookie without security flags
     {
         "id": "insecure_cookie",
         "triggers": {"rule_ids": ["cookie", "insecure-cookie", "missing-secure-flag"]},
-        "match": lambda code: bool(re.search(r"set_cookie\s*\(", code) and not re.search(r"httponly\s*=\s*True", code, re.IGNORECASE)),
+        "match": lambda code: bool(
+            re.search(r"set_cookie\s*\(", code)
+            and not re.search(
+                r"httponly\s*=\s*True", code, re.IGNORECASE,
+            )
+        ),
         "fix": lambda code: _fix_cookie(code),
         "explanation": {
-            "en": "Added httponly, secure, and samesite flags to cookie. These flags prevent XSS cookie theft and CSRF attacks.",
-            "fr": "Ajout des flags httponly, secure et samesite au cookie. Ces flags empêchent le vol de cookies par XSS et les attaques CSRF.",
+            "en": (
+                "Added httponly, secure, and samesite flags to "
+                "cookie. These flags prevent XSS cookie theft "
+                "and CSRF attacks."
+            ),
+            "fr": (
+                "Ajout des flags httponly, secure et samesite au "
+                "cookie. Ces flags empêchent le vol de cookies "
+                "par XSS et les attaques CSRF."
+            ),
         },
     },
     # 12. pickle.loads → json.loads
@@ -147,8 +256,18 @@ PATTERNS = [
         "match": lambda code: "pickle.loads(" in code or "pickle.load(" in code,
         "fix": lambda code: code.replace("pickle.loads(", "json.loads(").replace("pickle.load(", "json.load("),
         "explanation": {
-            "en": "Replaced pickle with json for deserialization. Pickle can execute arbitrary code during deserialization, making it unsafe for untrusted data.",
-            "fr": "Remplacement de pickle par json pour la désérialisation. Pickle peut exécuter du code arbitraire, ce qui est dangereux pour des données non fiables.",
+            "en": (
+                "Replaced pickle with json for deserialization. "
+                "Pickle can execute arbitrary code during "
+                "deserialization, making it unsafe for "
+                "untrusted data."
+            ),
+            "fr": (
+                "Remplacement de pickle par json pour la "
+                "désérialisation. Pickle peut exécuter du code "
+                "arbitraire, ce qui est dangereux pour des "
+                "données non fiables."
+            ),
         },
     },
     # 13. yaml.load → yaml.safe_load
@@ -158,8 +277,16 @@ PATTERNS = [
         "match": lambda code: bool(re.search(r"yaml\.load\s*\(", code)),
         "fix": lambda code: re.sub(r"yaml\.load\s*\(", "yaml.safe_load(", code),
         "explanation": {
-            "en": "Replaced yaml.load() with yaml.safe_load(). yaml.load can execute arbitrary Python code embedded in YAML documents.",
-            "fr": "Remplacement de yaml.load() par yaml.safe_load(). yaml.load peut exécuter du code Python arbitraire intégré dans les documents YAML.",
+            "en": (
+                "Replaced yaml.load() with yaml.safe_load(). "
+                "yaml.load can execute arbitrary Python code "
+                "embedded in YAML documents."
+            ),
+            "fr": (
+                "Remplacement de yaml.load() par yaml.safe_load(). "
+                "yaml.load peut exécuter du code Python arbitraire "
+                "intégré dans les documents YAML."
+            ),
         },
     },
     # 14. requests verify=False → verify=True
@@ -169,8 +296,17 @@ PATTERNS = [
         "match": lambda code: "verify=False" in code,
         "fix": lambda code: code.replace("verify=False", "verify=True"),
         "explanation": {
-            "en": "Changed verify=False to verify=True to enforce SSL certificate verification. Disabling verification allows man-in-the-middle attacks.",
-            "fr": "Changement de verify=False à verify=True pour vérifier les certificats SSL. Désactiver la vérification permet les attaques man-in-the-middle.",
+            "en": (
+                "Changed verify=False to verify=True to enforce "
+                "SSL certificate verification. Disabling "
+                "verification allows man-in-the-middle attacks."
+            ),
+            "fr": (
+                "Changement de verify=False à verify=True pour "
+                "vérifier les certificats SSL. Désactiver la "
+                "vérification permet les attaques "
+                "man-in-the-middle."
+            ),
         },
     },
     # 15. mktemp → mkstemp
@@ -180,8 +316,16 @@ PATTERNS = [
         "match": lambda code: "mktemp(" in code,
         "fix": lambda code: code.replace("mktemp(", "mkstemp("),
         "explanation": {
-            "en": "Replaced mktemp() with mkstemp(). mktemp is vulnerable to race conditions where an attacker can create the file before your program.",
-            "fr": "Remplacement de mktemp() par mkstemp(). mktemp est vulnérable aux conditions de concurrence (race conditions).",
+            "en": (
+                "Replaced mktemp() with mkstemp(). mktemp is "
+                "vulnerable to race conditions where an attacker "
+                "can create the file before your program."
+            ),
+            "fr": (
+                "Remplacement de mktemp() par mkstemp(). mktemp "
+                "est vulnérable aux conditions de concurrence "
+                "(race conditions)."
+            ),
         },
     },
     # 16. shell=True in subprocess → shell=False
@@ -191,8 +335,16 @@ PATTERNS = [
         "match": lambda code: "shell=True" in code,
         "fix": lambda code: code.replace("shell=True", "shell=False"),
         "explanation": {
-            "en": "Changed shell=True to shell=False in subprocess call. shell=True allows shell injection via metacharacters in user input.",
-            "fr": "Changement de shell=True a shell=False dans l'appel subprocess. shell=True permet l'injection shell via les metacaracteres.",
+            "en": (
+                "Changed shell=True to shell=False in subprocess "
+                "call. shell=True allows shell injection via "
+                "metacharacters in user input."
+            ),
+            "fr": (
+                "Changement de shell=True a shell=False dans "
+                "l'appel subprocess. shell=True permet l'injection "
+                "shell via les metacaracteres."
+            ),
         },
     },
     # 17. random.random() for security → secrets.token_hex()
@@ -206,8 +358,18 @@ PATTERNS = [
             code,
         ),
         "explanation": {
-            "en": "Replaced random module with secrets.token_hex() for cryptographically secure random generation. The random module is not suitable for security purposes.",
-            "fr": "Remplacement du module random par secrets.token_hex() pour une generation aleatoire cryptographiquement sure. Le module random n'est pas adapte a la securite.",
+            "en": (
+                "Replaced random module with secrets.token_hex() "
+                "for cryptographically secure random generation. "
+                "The random module is not suitable for security "
+                "purposes."
+            ),
+            "fr": (
+                "Remplacement du module random par "
+                "secrets.token_hex() pour une generation aleatoire "
+                "cryptographiquement sure. Le module random n'est "
+                "pas adapte a la securite."
+            ),
         },
     },
     # 18. assert in production code → if not: raise ValueError
@@ -217,8 +379,17 @@ PATTERNS = [
         "match": lambda code: bool(re.search(r"\bassert\s+", code)),
         "fix": lambda code: _fix_assert(code),
         "explanation": {
-            "en": "Replaced assert with explicit if/raise. Assert statements are stripped when Python runs with -O flag, silently removing security checks.",
-            "fr": "Remplacement de assert par if/raise explicite. Les assertions sont supprimees avec le flag -O de Python, retirant silencieusement les verifications de securite.",
+            "en": (
+                "Replaced assert with explicit if/raise. Assert "
+                "statements are stripped when Python runs with -O "
+                "flag, silently removing security checks."
+            ),
+            "fr": (
+                "Remplacement de assert par if/raise explicite. "
+                "Les assertions sont supprimees avec le flag -O "
+                "de Python, retirant silencieusement les "
+                "verifications de securite."
+            ),
         },
     },
     # 19. chmod 777 / overly permissive file permissions → 0o755
@@ -228,8 +399,17 @@ PATTERNS = [
         "match": lambda code: bool(re.search(r"0o?777", code)),
         "fix": lambda code: re.sub(r"0o?777", "0o755", code),
         "explanation": {
-            "en": "Changed file permissions from 777 (world-writable) to 755. World-writable files can be modified by any user on the system.",
-            "fr": "Changement des permissions de 777 (ecriture pour tous) a 755. Les fichiers accessibles en ecriture a tous peuvent etre modifies par n'importe quel utilisateur.",
+            "en": (
+                "Changed file permissions from 777 "
+                "(world-writable) to 755. World-writable files "
+                "can be modified by any user on the system."
+            ),
+            "fr": (
+                "Changement des permissions de 777 (ecriture pour "
+                "tous) a 755. Les fichiers accessibles en ecriture "
+                "a tous peuvent etre modifies par n'importe quel "
+                "utilisateur."
+            ),
         },
     },
     # 20. Telnet/FTP → recommendation SSH/SFTP
@@ -241,8 +421,18 @@ PATTERNS = [
             "ftplib", "paramiko  # Use SFTP instead of FTP"
         ),
         "explanation": {
-            "en": "Replaced Telnet/FTP with SSH/SFTP (paramiko). Telnet and FTP transmit data in cleartext, exposing credentials and data to network sniffing.",
-            "fr": "Remplacement de Telnet/FTP par SSH/SFTP (paramiko). Telnet et FTP transmettent les donnees en clair, exposant les identifiants au sniffing reseau.",
+            "en": (
+                "Replaced Telnet/FTP with SSH/SFTP (paramiko). "
+                "Telnet and FTP transmit data in cleartext, "
+                "exposing credentials and data to network "
+                "sniffing."
+            ),
+            "fr": (
+                "Remplacement de Telnet/FTP par SSH/SFTP "
+                "(paramiko). Telnet et FTP transmettent les "
+                "donnees en clair, exposant les identifiants "
+                "au sniffing reseau."
+            ),
         },
     },
 ]
@@ -253,13 +443,18 @@ def _fix_sqli(code: str) -> str:
     # PHP concat: "SELECT ... WHERE id = " . $id → prepared statement
     m = re.search(r"""(['"])(.*?)\1\s*\.\s*(\$\w+)""", code)
     if m:
-        quote, body, var = m.group(1), m.group(2), m.group(3)
+        _, body, var = m.group(1), m.group(2), m.group(3)
         placeholder = "?"
-        return code[:m.start()] + f'"{body}{placeholder}"  /* use prepared: $stmt = $pdo->prepare(...); $stmt->execute([{var}]); */' + code[m.end():]
+        prepared = (
+            f'"{body}{placeholder}"  /* use prepared: '
+            f"$stmt = $pdo->prepare(...); "
+            f"$stmt->execute([{var}]); */"
+        )
+        return code[:m.start()] + prepared + code[m.end():]
     # Python f-string: f"SELECT ... WHERE x = {var}" → "SELECT ... WHERE x = %s", (var,)
     m = re.search(r"""f(['"])(.*?)\1""", code)
     if m:
-        quote, body = m.group(1), m.group(2)
+        _, body = m.group(1), m.group(2)
         params = re.findall(r"\{(\w+)\}", body)
         new_body = re.sub(r"\{(\w+)\}", "%s", body)
         params_str = ", ".join(params)
@@ -268,7 +463,7 @@ def _fix_sqli(code: str) -> str:
     # Python/JS string concat: "SELECT ... " + var → "SELECT ... %s", (var,)
     m = re.search(r"""(['"])(.*?)\1\s*\+\s*(\w+)""", code)
     if m:
-        quote, body, var = m.group(1), m.group(2), m.group(3)
+        _, body, var = m.group(1), m.group(2), m.group(3)
         return code[:m.start()] + f'"{body}%s", ({var},)' + code[m.end():]
     return code
 

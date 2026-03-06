@@ -1,6 +1,5 @@
 """Tests for multi-provider AI fix generation via the API views."""
 
-import uuid
 from unittest.mock import patch
 
 import pytest
@@ -8,7 +7,6 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.accounts.models import UserProfile
 from apps.scanner.models import Finding, Scan
 
 User = get_user_model()

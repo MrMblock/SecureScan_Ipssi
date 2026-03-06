@@ -1,14 +1,14 @@
 from django.urls import path
 
 from .views.auth import (
-    SignupView,
-    LoginView,
-    LogoutView,
-    GoogleAuthView,
+    CookieTokenRefreshView,
     GithubAuthView,
     GithubReposView,
+    GoogleAuthView,
+    LoginView,
+    LogoutView,
     MeView,
-    CookieTokenRefreshView,
+    SignupView,
     TokenObtainView,
     TokenRefreshBodyView,
 )

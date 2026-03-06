@@ -1,21 +1,17 @@
+import logging
 import os
 import uuid
 
-from rest_framework.permissions import AllowAny
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 import requests
-
-from django.contrib.auth import get_user_model
-from django.contrib.auth import authenticate
+from django.conf import settings
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from django.conf import settings
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
-
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.accounts.models import UserProfile
@@ -352,7 +348,7 @@ class GithubAuthView(APIView):
             token_response.raise_for_status()
             token_res = token_response.json()
         except (requests.exceptions.RequestException, ValueError) as exc:
-            import logging; logging.getLogger(__name__).error("GitHub OAuth token exchange failed: %s", exc)  # noqa: E702
+            logging.getLogger(__name__).error("GitHub OAuth token exchange failed: %s", exc)
             return Response({"error": f"Failed to contact GitHub OAuth: {exc}"}, status=502)
 
         access_token = token_res.get("access_token")

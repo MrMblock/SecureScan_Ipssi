@@ -5,27 +5,44 @@ from ..crawler import CrawlResult
 REQUIRED_HEADERS = {
     "content-security-policy": {
         "title": "Missing Content-Security-Policy header",
-        "description": "The Content-Security-Policy (CSP) header helps prevent XSS, clickjacking, and other code injection attacks.",
+        "description": (
+            "The Content-Security-Policy (CSP) header helps prevent "
+            "XSS, clickjacking, and other code injection attacks."
+        ),
         "severity": "medium",
     },
     "x-frame-options": {
         "title": "Missing X-Frame-Options header",
-        "description": "The X-Frame-Options header prevents clickjacking attacks by controlling whether the page can be embedded in frames.",
+        "description": (
+            "The X-Frame-Options header prevents clickjacking "
+            "attacks by controlling whether the page can be "
+            "embedded in frames."
+        ),
         "severity": "medium",
     },
     "strict-transport-security": {
         "title": "Missing Strict-Transport-Security (HSTS) header",
-        "description": "HSTS ensures browsers only connect via HTTPS, preventing protocol downgrade attacks and cookie hijacking.",
+        "description": (
+            "HSTS ensures browsers only connect via HTTPS, "
+            "preventing protocol downgrade attacks and "
+            "cookie hijacking."
+        ),
         "severity": "high",
     },
     "x-content-type-options": {
         "title": "Missing X-Content-Type-Options header",
-        "description": "Without 'nosniff', browsers may MIME-sniff responses, potentially executing malicious content.",
+        "description": (
+            "Without 'nosniff', browsers may MIME-sniff "
+            "responses, potentially executing malicious content."
+        ),
         "severity": "low",
     },
     "permissions-policy": {
         "title": "Missing Permissions-Policy header",
-        "description": "The Permissions-Policy header controls which browser features and APIs can be used on the page.",
+        "description": (
+            "The Permissions-Policy header controls which browser "
+            "features and APIs can be used on the page."
+        ),
         "severity": "low",
     },
     "referrer-policy": {

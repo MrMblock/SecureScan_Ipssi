@@ -36,10 +36,10 @@ def run_sslyze(target_url: str) -> list[dict]:
 
     try:
         from sslyze import (  # noqa: PLC0415
-            Scanner,
-            ServerScanRequest,
-            ServerNetworkLocation,
             ScanCommand,
+            Scanner,
+            ServerNetworkLocation,
+            ServerScanRequest,
         )
 
         location = ServerNetworkLocation(hostname=hostname, port=port)

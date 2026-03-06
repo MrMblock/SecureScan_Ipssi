@@ -1,13 +1,12 @@
 """Unit tests for scanner serializers."""
 
-from datetime import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
-from apps.scanner.models import Finding, Scan
+from apps.scanner.models import Finding
 from apps.scanner.serializers import FindingSerializer, ScanCreateSerializer
 
 

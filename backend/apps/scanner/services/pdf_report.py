@@ -42,8 +42,8 @@ def build_report_context(scan) -> dict:
         duration = 0
 
     # Languages
-    langs = [l for l in (scan.detected_languages or []) if l != "any"]
-    languages = ", ".join(l.capitalize() for l in langs) or "N/A"
+    langs = [lang for lang in (scan.detected_languages or []) if lang != "any"]
+    languages = ", ".join(lang.capitalize() for lang in langs) or "N/A"
 
     # --- OWASP overview (bar chart data) ---
     owasp_counts = defaultdict(lambda: {"critical": 0, "high": 0, "medium": 0, "low": 0, "total": 0})

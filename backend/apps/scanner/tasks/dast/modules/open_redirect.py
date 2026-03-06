@@ -1,7 +1,7 @@
 """DAST module: Open Redirect Testing (OWASP A01)."""
 
 import logging
-from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+from urllib.parse import parse_qs, urlparse, urlunparse
 
 import httpx
 

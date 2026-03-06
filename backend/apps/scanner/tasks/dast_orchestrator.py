@@ -159,7 +159,12 @@ def run_dast_module(self, scan_id: str, module_name: str, crawl_data: dict, targ
         func = getattr(module, func_map[module_name])
         findings = func(crawl_result, target_url)
 
-        return {"tool": f"dast_{module_name.split('_')[0] if '_' in module_name else module_name}", "error": None, "findings": findings}
+        tool_name = (
+            f"dast_{module_name.split('_')[0]}"
+            if '_' in module_name
+            else f"dast_{module_name}"
+        )
+        return {"tool": tool_name, "error": None, "findings": findings}
 
     except Exception as exc:  # noqa: BLE001
         logger.error("DAST module '%s' failed: %s", module_name, exc)

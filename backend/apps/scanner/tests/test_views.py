@@ -1,6 +1,5 @@
 """Functional tests for the scanner API endpoints."""
 
-import os
 import uuid
 from unittest.mock import patch
 
@@ -91,35 +90,35 @@ def test_delete_scan(auth_client, scan, finding):
 def test_findings_list(auth_client, scan, finding):
     resp = auth_client.get(f"/api/scanner/scans/{scan.id}/findings/")
     assert resp.status_code == 200
-    assert len(resp.data) >= 1
+    assert len(resp.data["results"]) >= 1
 
 
 @pytest.mark.django_db
 def test_findings_filter_severity(auth_client, scan, finding):
     resp = auth_client.get(f"/api/scanner/scans/{scan.id}/findings/?severity=high")
     assert resp.status_code == 200
-    assert all(f["severity"] == "high" for f in resp.data)
+    assert all(f["severity"] == "high" for f in resp.data["results"])
 
 
 @pytest.mark.django_db
 def test_findings_filter_tool(auth_client, scan, finding):
     resp = auth_client.get(f"/api/scanner/scans/{scan.id}/findings/?tool=semgrep")
     assert resp.status_code == 200
-    assert all(f["tool"] == "semgrep" for f in resp.data)
+    assert all(f["tool"] == "semgrep" for f in resp.data["results"])
 
 
 @pytest.mark.django_db
 def test_findings_filter_owasp(auth_client, scan, finding):
     resp = auth_client.get(f"/api/scanner/scans/{scan.id}/findings/?owasp=A05")
     assert resp.status_code == 200
-    assert all(f["owasp_category"] == "A05" for f in resp.data)
+    assert all(f["owasp_category"] == "A05" for f in resp.data["results"])
 
 
 @pytest.mark.django_db
 def test_findings_filter_no_match(auth_client, scan, finding):
     resp = auth_client.get(f"/api/scanner/scans/{scan.id}/findings/?severity=critical")
     assert resp.status_code == 200
-    assert len(resp.data) == 0
+    assert len(resp.data["results"]) == 0
 
 
 # ── Source file endpoint ─────────────────────────────────────────────────────

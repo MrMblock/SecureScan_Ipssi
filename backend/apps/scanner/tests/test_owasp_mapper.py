@@ -1,9 +1,7 @@
 """Unit tests for the OWASP Top 10 mapper."""
 
-import pytest
 
 from apps.scanner.services.owasp_mapper import get_owasp_label, map_finding_to_owasp
-
 
 # ── Semgrep mapping ──────────────────────────────────────────────────────────
 

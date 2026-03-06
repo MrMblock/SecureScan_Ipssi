@@ -16,7 +16,6 @@ import pytest
 
 from apps.scanner.services.pattern_fixer import try_pattern_fix
 
-
 # ---------------------------------------------------------------------------
 # Helper
 # ---------------------------------------------------------------------------
@@ -118,7 +117,7 @@ class TestSQLInjection:
         assert result is not None
         assert result["pattern_id"] == "sqli_fstring"
 
-    def test_trigger_via_S608_rule(self):
+    def test_trigger_via_s608_rule(self):
         """Le pattern se déclenche aussi avec le rule_id bandit 'S608'."""
         code = 'cursor.execute(f"SELECT * FROM users WHERE id = {user_id}")'
         result = try_pattern_fix(_make_finding(rule_id="S608", code_snippet=code))
@@ -258,7 +257,8 @@ class TestEval:
     def test_explanation_mentions_code_execution_fr(self):
         code = 'eval(x)'
         result = try_pattern_fix(_make_finding(rule_id="eval", code_snippet=code), lang="fr")
-        assert "code arbitraire" in result["fix_explanation"].lower() or "exécution" in result["fix_explanation"].lower()
+        explanation = result["fix_explanation"].lower()
+        assert "code arbitraire" in explanation or "exécution" in explanation
 
 
 # ===================================================================
@@ -331,7 +331,7 @@ class TestOsSystem:
         _assert_fix_metadata(result, pattern_id="os_system_to_subprocess")
         assert "subprocess.run" in result["fixed_code"]
 
-    def test_trigger_via_B607(self):
+    def test_trigger_via_b607(self):
         """Le rule_id B607 déclenche le même pattern."""
         code = 'os.system(command)'
         result = try_pattern_fix(_make_finding(rule_id="B607", code_snippet=code))
@@ -415,7 +415,8 @@ class TestHardcodedSecret:
     def test_explanation_mentions_env_fr(self):
         code = 'password = "leaked_secret"'
         result = try_pattern_fix(_make_finding(rule_id="hardcoded", code_snippet=code), lang="fr")
-        assert "environnement" in result["fix_explanation"].lower() or "code source" in result["fix_explanation"].lower()
+        explanation = result["fix_explanation"].lower()
+        assert "environnement" in explanation or "code source" in explanation
 
 
 # ===================================================================

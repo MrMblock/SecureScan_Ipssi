@@ -113,7 +113,7 @@ def run_sqli(crawl_result: CrawlResult, target_url: str) -> list[dict]:
                     break  # One payload per form is enough
 
         # Test URL parameters
-        from urllib.parse import urlparse, parse_qs, urlunparse
+        from urllib.parse import parse_qs, urlparse, urlunparse
 
         tested_urls: set[str] = set()
         for page in crawl_result.pages[:15]:

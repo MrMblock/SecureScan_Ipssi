@@ -183,7 +183,13 @@ def run_bandit(workspace: str) -> list[dict]:
                 "file_path": _rel_path(r.get("filename", ""), workspace),
                 "line_start": r.get("line_number"),
                 "line_end": r.get("end_col_offset"),
-                "code_snippet": _read_snippet(r.get("filename", ""), r.get("line_number"), r.get("line_number")) or r.get("code", "")[:2000],
+                "code_snippet": (
+                    _read_snippet(
+                        r.get("filename", ""),
+                        r.get("line_number"),
+                        r.get("line_number"),
+                    ) or r.get("code", "")[:2000]
+                ),
                 "severity": _BANDIT_SEV.get(r.get("issue_severity", ""), "info"),
                 "title": r.get("test_name", ""),
                 "description": r.get("issue_text", ""),
@@ -296,7 +302,12 @@ def run_eslint(workspace: str) -> list[dict]:
                     "file_path": _rel_path(fpath, workspace),
                     "line_start": msg.get("line"),
                     "line_end": msg.get("endLine"),
-                    "code_snippet": _read_snippet(fpath, msg.get("line"), msg.get("endLine")) or msg.get("source", "")[:2000],
+                    "code_snippet": (
+                        _read_snippet(
+                            fpath, msg.get("line"),
+                            msg.get("endLine"),
+                        ) or msg.get("source", "")[:2000]
+                    ),
                     "severity": "medium" if msg.get("severity", 1) >= 2 else "low",
                     "title": msg.get("ruleId", "").replace("security/", "").replace("-", " ").title(),
                     "description": msg.get("message", ""),
@@ -469,7 +480,13 @@ def run_composer_audit(workspace: str) -> list[dict]:
 
         data = json.loads(output)
         findings = []
-        for advisory in data.get("advisories", {}).values() if isinstance(data.get("advisories"), dict) else data.get("advisories", []):
+        advisories_raw = data.get("advisories", {})
+        advisory_list = (
+            advisories_raw.values()
+            if isinstance(advisories_raw, dict)
+            else advisories_raw
+        )
+        for advisory in advisory_list:
             if isinstance(advisory, dict):
                 pkg = advisory.get("packageName", "") or advisory.get("package", {}).get("name", "")
                 title = advisory.get("title", advisory.get("cve", "Unknown vulnerability"))

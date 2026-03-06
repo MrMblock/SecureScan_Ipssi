@@ -1,6 +1,6 @@
 """Unit tests for the URL validator (SSRF protection)."""
 
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from rest_framework import serializers

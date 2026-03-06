@@ -27,7 +27,11 @@ def run_ssl(crawl_result: CrawlResult, target_url: str) -> list[dict]:
             "code_snippet": f"Target URL uses {parsed.scheme}:// instead of https://",
             "severity": "high",
             "title": "Website does not use HTTPS",
-            "description": "The target website is served over unencrypted HTTP. All data transmitted is vulnerable to interception.",
+            "description": (
+                "The target website is served over unencrypted "
+                "HTTP. All data transmitted is vulnerable to "
+                "interception."
+            ),
         })
         return findings
 
@@ -51,7 +55,11 @@ def run_ssl(crawl_result: CrawlResult, target_url: str) -> list[dict]:
                         "code_snippet": f"Negotiated protocol: {protocol}\nCipher: {cipher}",
                         "severity": "high",
                         "title": f"Weak TLS protocol: {protocol}",
-                        "description": f"The server negotiated {protocol} which is considered insecure. Use TLS 1.2 or TLS 1.3.",
+                        "description": (
+                            f"The server negotiated {protocol} "
+                            f"which is considered insecure. "
+                            f"Use TLS 1.2 or TLS 1.3."
+                        ),
                     })
 
                 # Check cipher suite
@@ -93,7 +101,11 @@ def run_ssl(crawl_result: CrawlResult, target_url: str) -> list[dict]:
                                     "code_snippet": f"Certificate expired: {not_after}",
                                     "severity": "critical",
                                     "title": "SSL certificate has expired",
-                                    "description": f"The SSL certificate expired on {not_after}. Expired certificates break HTTPS trust.",
+                                    "description": (
+                                        f"The SSL certificate expired on "
+                                        f"{not_after}. Expired certificates "
+                                        f"break HTTPS trust."
+                                    ),
                                 })
                             elif (expiry_dt - now).days < 30:
                                 findings.append({
@@ -102,10 +114,16 @@ def run_ssl(crawl_result: CrawlResult, target_url: str) -> list[dict]:
                                     "file_path": target_url,
                                     "line_start": None,
                                     "line_end": None,
-                                    "code_snippet": f"Certificate expires: {not_after} ({(expiry_dt - now).days} days remaining)",
+                                    "code_snippet": (
+                                        f"Certificate expires: {not_after} "
+                                        f"({(expiry_dt - now).days} days remaining)"
+                                    ),
                                     "severity": "medium",
                                     "title": "SSL certificate expiring soon",
-                                    "description": f"The SSL certificate expires on {not_after}. Renew it before expiry.",
+                                    "description": (
+                                        f"The SSL certificate expires on "
+                                        f"{not_after}. Renew it before expiry."
+                                    ),
                                 })
                         except Exception:
                             pass

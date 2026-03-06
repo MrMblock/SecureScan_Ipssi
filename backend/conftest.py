@@ -1,12 +1,11 @@
 """Shared pytest fixtures for the SecureScan backend test suite."""
 
 import os
-import tempfile
-from pathlib import Path
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.test")
 
 import django  # noqa: E402
+
 django.setup()
 
 import pytest  # noqa: E402

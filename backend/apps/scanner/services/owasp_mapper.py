@@ -414,7 +414,9 @@ def classify_finding(
         template_lower = rule_id.lower()
         text = (title + " " + description).lower()
         # Injection-related
-        if any(kw in template_lower for kw in ("sqli", "sql-injection", "xss", "ssti", "rce", "command-injection", "lfi", "rfi")):
+        _inject_kw = ("sqli", "sql-injection", "xss", "ssti", "rce",
+                      "command-injection", "lfi", "rfi")
+        if any(kw in template_lower for kw in _inject_kw):
             return "A05", "high"
         if any(kw in template_lower for kw in ("ssrf", "open-redirect", "traversal")):
             return "A01", "high"
@@ -464,44 +466,130 @@ def get_owasp_label(code: str) -> str:
 # ---------------------------------------------------------------------------
 OWASP_RECOMMENDATIONS = {
     "A01": {
-        "en": "Implement proper access controls: enforce least privilege, deny by default, validate all access on the server side. Use CORS policies and disable directory listings.",
-        "fr": "Implementer des controles d'acces : appliquer le principe du moindre privilege, refuser par defaut, valider tous les acces cote serveur. Utiliser des politiques CORS et desactiver les listings de repertoires.",
+        "en": (
+            "Implement proper access controls: enforce least privilege, "
+            "deny by default, validate all access on the server side. "
+            "Use CORS policies and disable directory listings."
+        ),
+        "fr": (
+            "Implementer des controles d'acces : appliquer le principe "
+            "du moindre privilege, refuser par defaut, valider tous les "
+            "acces cote serveur. Utiliser des politiques CORS et "
+            "desactiver les listings de repertoires."
+        ),
     },
     "A02": {
-        "en": "Harden configuration: remove default credentials, disable unnecessary features, apply security headers, and review cloud permissions regularly.",
-        "fr": "Renforcer la configuration : supprimer les identifiants par defaut, desactiver les fonctionnalites inutiles, appliquer les en-tetes de securite, et revoir regulierement les permissions cloud.",
+        "en": (
+            "Harden configuration: remove default credentials, disable "
+            "unnecessary features, apply security headers, and review "
+            "cloud permissions regularly."
+        ),
+        "fr": (
+            "Renforcer la configuration : supprimer les identifiants "
+            "par defaut, desactiver les fonctionnalites inutiles, "
+            "appliquer les en-tetes de securite, et revoir "
+            "regulierement les permissions cloud."
+        ),
     },
     "A03": {
-        "en": "Audit dependencies regularly with automated tools. Pin versions, verify package integrity, and monitor for known vulnerabilities in third-party libraries.",
-        "fr": "Auditer regulierement les dependances avec des outils automatises. Epingler les versions, verifier l'integrite des paquets et surveiller les vulnerabilites connues.",
+        "en": (
+            "Audit dependencies regularly with automated tools. Pin "
+            "versions, verify package integrity, and monitor for known "
+            "vulnerabilities in third-party libraries."
+        ),
+        "fr": (
+            "Auditer regulierement les dependances avec des outils "
+            "automatises. Epingler les versions, verifier l'integrite "
+            "des paquets et surveiller les vulnerabilites connues."
+        ),
     },
     "A04": {
-        "en": "Use strong encryption algorithms (AES-256, RSA-2048+). Never hardcode secrets. Rotate keys regularly and use proper key management solutions.",
-        "fr": "Utiliser des algorithmes de chiffrement forts (AES-256, RSA-2048+). Ne jamais coder en dur les secrets. Faire tourner les cles regulierement et utiliser des solutions de gestion de cles.",
+        "en": (
+            "Use strong encryption algorithms (AES-256, RSA-2048+). "
+            "Never hardcode secrets. Rotate keys regularly and use "
+            "proper key management solutions."
+        ),
+        "fr": (
+            "Utiliser des algorithmes de chiffrement forts (AES-256, "
+            "RSA-2048+). Ne jamais coder en dur les secrets. Faire "
+            "tourner les cles regulierement et utiliser des solutions "
+            "de gestion de cles."
+        ),
     },
     "A05": {
-        "en": "Use parameterized queries for SQL, escape outputs for XSS, and validate/sanitize all user input. Prefer ORM methods over raw queries.",
-        "fr": "Utiliser des requetes parametrees pour SQL, echapper les sorties pour XSS, et valider/assainir toutes les entrees utilisateur. Preferer les methodes ORM aux requetes brutes.",
+        "en": (
+            "Use parameterized queries for SQL, escape outputs for "
+            "XSS, and validate/sanitize all user input. Prefer ORM "
+            "methods over raw queries."
+        ),
+        "fr": (
+            "Utiliser des requetes parametrees pour SQL, echapper les "
+            "sorties pour XSS, et valider/assainir toutes les entrees "
+            "utilisateur. Preferer les methodes ORM aux requetes brutes."
+        ),
     },
     "A06": {
-        "en": "Add rate limiting, input validation, and threat modeling from the design phase. Implement CAPTCHA for sensitive operations and enforce business logic checks server-side.",
-        "fr": "Ajouter du rate limiting, de la validation d'entree et de la modelisation de menaces des la conception. Implementer des CAPTCHA pour les operations sensibles et appliquer les regles metier cote serveur.",
+        "en": (
+            "Add rate limiting, input validation, and threat modeling "
+            "from the design phase. Implement CAPTCHA for sensitive "
+            "operations and enforce business logic checks server-side."
+        ),
+        "fr": (
+            "Ajouter du rate limiting, de la validation d'entree et "
+            "de la modelisation de menaces des la conception. "
+            "Implementer des CAPTCHA pour les operations sensibles et "
+            "appliquer les regles metier cote serveur."
+        ),
     },
     "A07": {
-        "en": "Implement multi-factor authentication, use strong password policies, and protect against credential stuffing with account lockout and rate limiting.",
-        "fr": "Implementer l'authentification multi-facteurs, utiliser des politiques de mots de passe forts et proteger contre le bourrage d'identifiants avec le verrouillage de compte.",
+        "en": (
+            "Implement multi-factor authentication, use strong "
+            "password policies, and protect against credential "
+            "stuffing with account lockout and rate limiting."
+        ),
+        "fr": (
+            "Implementer l'authentification multi-facteurs, utiliser "
+            "des politiques de mots de passe forts et proteger contre "
+            "le bourrage d'identifiants avec le verrouillage de compte."
+        ),
     },
     "A08": {
-        "en": "Verify software integrity with digital signatures and checksums. Use CI/CD pipeline security controls and avoid deserializing untrusted data.",
-        "fr": "Verifier l'integrite des logiciels avec des signatures numeriques et des checksums. Utiliser des controles de securite CI/CD et eviter de deserialiser des donnees non fiables.",
+        "en": (
+            "Verify software integrity with digital signatures and "
+            "checksums. Use CI/CD pipeline security controls and avoid "
+            "deserializing untrusted data."
+        ),
+        "fr": (
+            "Verifier l'integrite des logiciels avec des signatures "
+            "numeriques et des checksums. Utiliser des controles de "
+            "securite CI/CD et eviter de deserialiser des donnees "
+            "non fiables."
+        ),
     },
     "A09": {
-        "en": "Log all authentication, access control, and input validation failures. Implement monitoring and alerting. Use structured logging and protect log integrity.",
-        "fr": "Journaliser tous les echecs d'authentification, de controle d'acces et de validation. Implementer la surveillance et les alertes. Utiliser des logs structures et proteger leur integrite.",
+        "en": (
+            "Log all authentication, access control, and input "
+            "validation failures. Implement monitoring and alerting. "
+            "Use structured logging and protect log integrity."
+        ),
+        "fr": (
+            "Journaliser tous les echecs d'authentification, de "
+            "controle d'acces et de validation. Implementer la "
+            "surveillance et les alertes. Utiliser des logs structures "
+            "et proteger leur integrite."
+        ),
     },
     "A10": {
-        "en": "Handle all exceptions gracefully. Never expose stack traces to users. Implement proper error handling with fail-safe defaults.",
-        "fr": "Gerer toutes les exceptions proprement. Ne jamais exposer les traces d'erreur aux utilisateurs. Implementer une gestion d'erreurs avec des valeurs par defaut securisees.",
+        "en": (
+            "Handle all exceptions gracefully. Never expose stack "
+            "traces to users. Implement proper error handling with "
+            "fail-safe defaults."
+        ),
+        "fr": (
+            "Gerer toutes les exceptions proprement. Ne jamais exposer "
+            "les traces d'erreur aux utilisateurs. Implementer une "
+            "gestion d'erreurs avec des valeurs par defaut securisees."
+        ),
     },
 }
 

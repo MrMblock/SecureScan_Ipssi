@@ -1,6 +1,5 @@
 """Unit tests for the language detector service."""
 
-import pytest
 
 from apps.scanner.services.language_detector import detect_languages, get_analyzers_for_languages
 

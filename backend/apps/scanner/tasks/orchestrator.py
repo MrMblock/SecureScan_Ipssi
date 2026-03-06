@@ -115,9 +115,9 @@ def _copy_uploaded_files(scan, workspace: Path) -> None:
         content = source_path.read_text(encoding="utf-8", errors="replace")
         lines = [line.rstrip() for line in content.splitlines()]
         # Compute indentation per non-empty line
-        non_empty = [l for l in lines if l]
+        non_empty = [ln for ln in lines if ln]
         if non_empty:
-            indents = [len(l) - len(l.lstrip()) for l in non_empty]
+            indents = [len(ln) - len(ln.lstrip()) for ln in non_empty]
             # Use the most common indent (mode) as the base to strip,
             # so one unindented line doesn't break the whole dedent.
             from collections import Counter  # noqa: PLC0415
@@ -129,7 +129,7 @@ def _copy_uploaded_files(scan, workspace: Path) -> None:
             else:
                 min_indent = min(indents)
             if min_indent > 0:
-                lines = [l[min_indent:] if l[:min_indent].strip() == "" else l for l in lines]
+                lines = [ln[min_indent:] if ln[:min_indent].strip() == "" else ln for ln in lines]
         destination.write_text("\n".join(lines) + "\n", encoding="utf-8")
     except Exception:  # noqa: BLE001
         # Fallback to raw copy if cleaning fails
@@ -268,7 +268,7 @@ def run_analyzer_task(self, scan_id: str, tool_name: str) -> dict:
         findings = run_analyzer(tool_name, workspace)
         return {"tool": tool_name, "error": None, "findings": findings}
 
-    except subprocess.TimeoutExpired as exc:
+    except subprocess.TimeoutExpired:
         logger.warning(
             "Task %s: analyzer '%s' timed out (attempt %d/%d) — will retry",
             self.request.id,

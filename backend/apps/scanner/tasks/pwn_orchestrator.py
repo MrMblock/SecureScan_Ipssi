@@ -48,8 +48,8 @@ def _send_progress(scan_id: str, percent: int, phase: str, label: str, message: 
 
     # Push via WebSocket
     try:
-        from channels.layers import get_channel_layer  # noqa: PLC0415
         from asgiref.sync import async_to_sync  # noqa: PLC0415
+        from channels.layers import get_channel_layer  # noqa: PLC0415
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
@@ -66,8 +66,8 @@ def _send_progress(scan_id: str, percent: int, phase: str, label: str, message: 
 def _send_completed(scan_id: str, total_findings: int):
     """Notify WebSocket clients that the scan completed."""
     try:
-        from channels.layers import get_channel_layer  # noqa: PLC0415
         from asgiref.sync import async_to_sync  # noqa: PLC0415
+        from channels.layers import get_channel_layer  # noqa: PLC0415
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
@@ -84,8 +84,8 @@ def _send_completed(scan_id: str, total_findings: int):
 def _send_failed(scan_id: str, error: str):
     """Notify WebSocket clients that the scan failed."""
     try:
-        from channels.layers import get_channel_layer  # noqa: PLC0415
         from asgiref.sync import async_to_sync  # noqa: PLC0415
+        from channels.layers import get_channel_layer  # noqa: PLC0415
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
@@ -198,7 +198,11 @@ def orchestrate_pwn_scan(self, scan_id: str) -> dict:
         try:
             from .pwn.sslyze_scanner import run_sslyze  # noqa: PLC0415
 
-            _send_progress(scan_id, 30, "ssl", "SSL/TLS Analysis", "Checking protocols and ciphers...", len(all_findings))
+            _send_progress(
+                scan_id, 30, "ssl", "SSL/TLS Analysis",
+                "Checking protocols and ciphers...",
+                len(all_findings),
+            )
             ssl_findings = run_sslyze(target_url)
             all_findings.extend(ssl_findings)
         except Exception as exc:  # noqa: BLE001
@@ -246,7 +250,8 @@ def orchestrate_pwn_scan(self, scan_id: str) -> dict:
                 ("open_redirect", "apps.scanner.tasks.dast.modules.open_redirect", "run_redirect"),
             ]
 
-            from .dast.crawler import CrawlResult as CrawlResultClass, FormInfo  # noqa: PLC0415
+            from .dast.crawler import CrawlResult as CrawlResultClass  # noqa: PLC0415
+            from .dast.crawler import FormInfo
 
             cr = CrawlResultClass(
                 pages=crawl_data["pages"],
@@ -306,8 +311,8 @@ def _aggregate_pwn_results(scan_id: str, all_findings: list[dict]):
     scan.status = "aggregating"
     scan.save(update_fields=["status"])
 
-    SEVERITY_WEIGHT = {"critical": 15, "high": 8, "medium": 3, "low": 1, "info": 0}
-    CVSS_BASE = {"critical": 9.5, "high": 7.5, "medium": 4.5, "low": 2.0, "info": 0.0}
+    severity_weight = {"critical": 15, "high": 8, "medium": 3, "low": 1, "info": 0}
+    cvss_base = {"critical": 9.5, "high": 7.5, "medium": 4.5, "low": 2.0, "info": 0.0}
 
     finding_objects = []
     for f in all_findings:
@@ -364,9 +369,9 @@ def _aggregate_pwn_results(scan_id: str, all_findings: list[dict]):
     medium = sum(1 for f in real_findings if f.severity == "medium")
     low = sum(1 for f in real_findings if f.severity == "low")
 
-    penalty = sum(SEVERITY_WEIGHT.get(f.severity, 0) for f in real_findings)
+    penalty = sum(severity_weight.get(f.severity, 0) for f in real_findings)
     score = max(0.0, 100.0 - penalty)
-    cvss_max = max((CVSS_BASE.get(f.severity, 0.0) for f in real_findings), default=0.0)
+    cvss_max = max((cvss_base.get(f.severity, 0.0) for f in real_findings), default=0.0)
 
     scan.status = "completed"
     scan.total_findings = total

@@ -1,10 +1,11 @@
 from django.db.models import Avg, Count, Max, Sum
 from django.http import HttpResponse
-from rest_framework.decorators import api_view, permission_classes as perm_classes
+from rest_framework.decorators import api_view
+from rest_framework.decorators import permission_classes as perm_classes
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveDestroyAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 
@@ -29,7 +30,7 @@ def owasp_chart_data(request):
     """GET /api/scanner/owasp-chart/ — OWASP 2025 distribution (stacked by severity) for all user scans."""
     from django.db.models import Count  # noqa: PLC0415
 
-    OWASP_LABELS = {
+    owasp_labels = {
         "A01": "A01 Access Control",
         "A02": "A02 Misconfiguration",
         "A03": "A03 Supply Chain",
@@ -44,7 +45,7 @@ def owasp_chart_data(request):
 
     counts = (
         Finding.objects
-        .filter(scan__user=request.user, scan__status="completed", owasp_category__in=list(OWASP_LABELS))
+        .filter(scan__user=request.user, scan__status="completed", owasp_category__in=list(owasp_labels))
         .exclude(status="false_positive")
         .values("owasp_category", "severity")
         .annotate(count=Count("id"))
@@ -52,7 +53,7 @@ def owasp_chart_data(request):
 
     data: dict[str, dict] = {
         code: {"name": label, "critical": 0, "high": 0, "medium": 0, "low": 0}
-        for code, label in OWASP_LABELS.items()
+        for code, label in owasp_labels.items()
     }
     for row in counts:
         cat = row["owasp_category"]
@@ -171,7 +172,7 @@ class ScanDetailView(RetrieveDestroyAPIView):
 @perm_classes([IsAuthenticated])
 def scan_owasp_chart(request, scan_id):
     """GET /api/scanner/scans/<uuid>/owasp-chart/ — OWASP 2025 breakdown for a single scan."""
-    OWASP_LABELS = {
+    owasp_labels = {
         "A01": "A01 Access Control",
         "A02": "A02 Misconfiguration",
         "A03": "A03 Supply Chain",
@@ -186,7 +187,7 @@ def scan_owasp_chart(request, scan_id):
 
     counts = (
         Finding.objects
-        .filter(scan_id=scan_id, scan__user=request.user, owasp_category__in=list(OWASP_LABELS))
+        .filter(scan_id=scan_id, scan__user=request.user, owasp_category__in=list(owasp_labels))
         .exclude(status="false_positive")
         .values("owasp_category", "severity")
         .annotate(count=Count("id"))
@@ -194,7 +195,7 @@ def scan_owasp_chart(request, scan_id):
 
     data: dict[str, dict] = {
         code: {"name": label, "critical": 0, "high": 0, "medium": 0, "low": 0}
-        for code, label in OWASP_LABELS.items()
+        for code, label in owasp_labels.items()
     }
     for row in counts:
         cat = row["owasp_category"]
@@ -263,7 +264,8 @@ def generate_fix(request, finding_id):
     except Finding.DoesNotExist:
         return Response({"detail": "Finding not found."}, status=404)
 
-    from .services.autofix import generate_fix as do_generate_fix, get_api_key_for_provider  # noqa: PLC0415
+    from .services.autofix import generate_fix as do_generate_fix  # noqa: PLC0415
+    from .services.autofix import get_api_key_for_provider
 
     lang = request.data.get("lang") or request.query_params.get("lang", "en")
 

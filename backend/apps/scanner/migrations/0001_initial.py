@@ -1,7 +1,7 @@
-import django.conf
-import django.db.models.deletion
 import uuid
 
+import django.conf
+import django.db.models.deletion
 from django.db import migrations, models
 
 

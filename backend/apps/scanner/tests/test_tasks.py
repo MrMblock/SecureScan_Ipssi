@@ -4,8 +4,7 @@ import io
 import subprocess
 import uuid
 import zipfile
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from django.contrib.auth import get_user_model
@@ -16,7 +15,6 @@ from apps.scanner.tasks.orchestrator import (
     aggregate_results,
     orchestrate_scan,
     run_analyzer_task,
-    SEVERITY_WEIGHT,
 )
 
 User = get_user_model()
@@ -55,7 +53,7 @@ class TestAggregateResults:
         scan.total_findings = 0
         scan.save()
 
-        result = aggregate_results(tool_results, str(scan.id))
+        aggregate_results(tool_results, str(scan.id))
 
         scan.refresh_from_db()
         assert scan.status == "completed"
@@ -67,7 +65,7 @@ class TestAggregateResults:
         assert Finding.objects.filter(scan=scan).count() == 2
 
     def test_zero_findings_score_100(self, scan):
-        result = aggregate_results([], str(scan.id))
+        aggregate_results([], str(scan.id))
         scan.refresh_from_db()
         assert scan.status == "completed"
         assert scan.total_findings == 0
@@ -87,13 +85,13 @@ class TestAggregateResults:
                 ],
             },
         ]
-        result = aggregate_results(tool_results, str(scan.id))
+        aggregate_results(tool_results, str(scan.id))
         scan.refresh_from_db()
         assert scan.security_score == 100 - 15 - 8 - 3 - 1
 
     def test_empty_tool_results(self, scan):
         """None entries in tool_results are skipped gracefully."""
-        result = aggregate_results([None, {}, {"findings": []}], str(scan.id))
+        aggregate_results([None, {}, {"findings": []}], str(scan.id))
         scan.refresh_from_db()
         assert scan.status == "completed"
         assert scan.total_findings == 0
@@ -131,7 +129,7 @@ class TestRunAnalyzerTask:
                 "description": "Mock finding",
             }
         ]
-        with patch("apps.scanner.tasks.orchestrator.run_analyzer", return_value=fake_findings):
+        with patch("apps.scanner.tasks.analyzers.run_analyzer", return_value=fake_findings):
             result = run_analyzer_task(str(scan.id), "semgrep")
 
         assert result["error"] is None
