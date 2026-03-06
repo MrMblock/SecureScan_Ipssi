@@ -500,7 +500,7 @@ securescan/
 |---|---|
 | Gabriel Saint-Louis | Tech Lead, Architecture backend, orchestrateur, OWASP mapper, auto-fix, CLI |
 | Sebastien Gerard | Frontend dashboard, landing page |
-| Sanedoma Ndiaye | Docker, CI/CD, deploiement, SAST |
+| Ousmane Ndiaye | Docker, CI/CD, deploiement, SAST |
 | Keziah Perfillon | Frontend, tests, Dossier Design |
 
 ---
