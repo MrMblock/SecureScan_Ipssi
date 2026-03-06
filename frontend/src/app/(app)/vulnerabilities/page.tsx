@@ -183,8 +183,8 @@ export default function VulnerabilitiesPage() {
       <h1 className="text-2xl font-bold text-(--text)">{t("app.vulnerabilities.title")}</h1>
 
       {/* Scan selector */}
-      <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-(--text-muted)">{t("app.vulnerabilities.scanLabel")}</label>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+        <label className="text-sm font-medium text-(--text-muted) shrink-0">{t("app.vulnerabilities.scanLabel")}</label>
         <select
           value={selectedScan ?? ""}
           onChange={(e) => setSelectedScan(e.target.value)}
@@ -297,9 +297,9 @@ export default function VulnerabilitiesPage() {
       )}
 
       {/* Filters: Severity + Tool */}
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-4">
         {/* Severity filter */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs font-medium text-(--text-muted)">{t("app.vulnerabilities.severityLabel")}</span>
           {[null, "critical", "high", "medium", "low"].map((sev) => (
             <button
@@ -319,7 +319,7 @@ export default function VulnerabilitiesPage() {
 
         {/* Tool filter */}
         {tools.length > 1 && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-medium text-(--text-muted)">{t("app.vulnerabilities.toolLabel")}</span>
             <button
               type="button"
@@ -350,7 +350,7 @@ export default function VulnerabilitiesPage() {
         )}
 
         {/* Status filter */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs font-medium text-(--text-muted)">Status:</span>
           <button
             type="button"

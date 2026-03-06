@@ -100,9 +100,9 @@ export default function ScansPage() {
                   </p>
                 </div>
 
-                <div className="flex shrink-0 items-center gap-4">
+                <div className="hidden sm:flex shrink-0 items-center gap-4">
                   {scan.status === "completed" && (
-                    <div className="flex gap-3 text-xs">
+                    <div className="hidden md:flex gap-3 text-xs">
                       {scan.critical_count > 0 && <span className="text-(--critical)">{scan.critical_count} critical</span>}
                       {scan.high_count > 0 && <span className="text-(--high)">{scan.high_count} high</span>}
                       {scan.medium_count > 0 && <span className="text-(--medium)">{scan.medium_count} med</span>}

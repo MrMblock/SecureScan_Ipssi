@@ -507,7 +507,7 @@ export default function FindingDetailPage({ params }: PageProps) {
       <Toaster position="top-center" toastOptions={{ style: { background: "#0f1724", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" } }} />
 
       {/* ===== Breadcrumb ===== */}
-      <nav className="flex items-center gap-2 text-sm text-(--text-muted)">
+      <nav className="flex items-center gap-2 text-sm text-(--text-muted) flex-wrap">
         <Link href="/scans" className="hover:text-(--text) transition-colors">{t("app.findingDetail.scans")}</Link>
         <span className="material-symbols-outlined text-xs" aria-hidden>chevron_right</span>
         <Link href={`/scans/${scanId}`} className="hover:text-(--text) transition-colors">
@@ -518,7 +518,7 @@ export default function FindingDetailPage({ params }: PageProps) {
       </nav>
 
       {/* ===== Header ===== */}
-      <div className="flex items-start justify-between gap-8">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
         <div className="min-w-0 flex-1">
           {/* Tags */}
           <div className="flex items-center gap-2 flex-wrap mb-3 mt-3">
@@ -531,14 +531,14 @@ export default function FindingDetailPage({ params }: PageProps) {
               </span>
             )}
           </div>
-          <h1 className="text-2xl font-bold text-(--text)">
+          <h1 className="text-xl sm:text-2xl font-bold text-(--text)">
             {finding.title} {t("app.findingDetail.remediation")}
           </h1>
-          <p className="mt-2 mb-6 text-sm text-(--text-muted) leading-relaxed">
+          <p className="mt-2 mb-6 text-sm text-(--text-muted) leading-relaxed break-words">
             {t("app.findingDetail.detectedBy")}{" "}
             <strong className="text-(--text)">{TOOL_LABELS[finding.tool] ?? finding.tool}</strong>
             {" "}{t("app.findingDetail.in")}{" "}
-            <code className="rounded bg-slate-800 px-1.5 py-0.5 text-xs font-mono text-(--accent)">
+            <code className="rounded bg-slate-800 px-1.5 py-0.5 text-xs font-mono text-(--accent) break-all">
               {finding.file_path}{finding.line_start ? `:${finding.line_start}` : ""}
             </code>
             {finding.has_fix && finding.fix_explanation && (
@@ -795,7 +795,7 @@ export default function FindingDetailPage({ params }: PageProps) {
 
             {/* Code body — side-by-side when fix available, full-width otherwise */}
             {finding.has_fix && fixCode ? (
-              <div className="grid grid-cols-2 divide-x divide-slate-700/50">
+              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-700/50">
                 <div className="min-w-0">
                   <CodeViewer
                     code={codeSource}

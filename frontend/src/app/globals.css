@@ -129,27 +129,27 @@
   }
 
   h1 {
-    @apply 2xl:text-9xl 2xl:leading-[156px] md:text-7xl text-5xl font-medium text-white;
+    @apply 2xl:text-9xl 2xl:leading-[156px] md:text-7xl text-3xl sm:text-5xl font-medium text-white;
   }
 
   h2 {
-    @apply text-4xl md:text-5xl font-medium text-white;
+    @apply text-2xl sm:text-4xl md:text-5xl font-medium text-white;
   }
 
   h3 {
-    @apply text-5xl font-medium text-white;
+    @apply text-3xl sm:text-5xl font-medium text-white;
   }
 
   h4 {
-    @apply text-2xl font-medium text-white;
+    @apply text-xl sm:text-2xl font-medium text-white;
   }
 
   h5 {
-    @apply text-xl font-medium text-white;
+    @apply text-lg sm:text-xl font-medium text-white;
   }
 
   h6 {
-    @apply text-lg lg:text-xl font-medium text-white;
+    @apply text-base sm:text-lg lg:text-xl font-medium text-white;
   }
 
   p {

@@ -120,20 +120,22 @@ export default function PwnForm() {
                   </div>
                   <span className="text-[11px] text-white/20 font-mono">securescan ~ pentest</span>
                 </div>
-                <div className="flex items-center gap-3 p-4">
-                  <span className="text-sm font-mono text-(--accent)/70 select-none">$</span>
-                  <input
-                    type="text"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
-                    placeholder="https://target.com"
-                    className="flex-1 bg-transparent text-sm font-mono text-white placeholder:text-white/20 outline-none"
-                  />
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-3 p-4">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <span className="text-sm font-mono text-(--accent)/70 select-none">$</span>
+                    <input
+                      type="text"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      onFocus={() => setFocused(true)}
+                      onBlur={() => setFocused(false)}
+                      placeholder="https://target.com"
+                      className="flex-1 min-w-0 bg-transparent text-sm font-mono text-white placeholder:text-white/20 outline-none"
+                    />
+                  </div>
                   <button
                     type="submit"
-                    className="group flex items-center gap-2 rounded-lg bg-gradient-to-r from-(--accent) to-(--accent-hover) px-5 py-2 text-sm font-semibold text-white transition-all hover:shadow-lg hover:shadow-(--accent)/20 active:scale-[0.97]"
+                    className="group flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-(--accent) to-(--accent-hover) px-5 py-2 text-sm font-semibold text-white transition-all hover:shadow-lg hover:shadow-(--accent)/20 active:scale-[0.97] shrink-0"
                   >
                     <span className="material-symbols-outlined text-base transition-transform group-hover:translate-x-0.5">rocket_launch</span>
                     {t("app.pwn.launch")}
@@ -153,7 +155,7 @@ export default function PwnForm() {
               )}
 
               {/* Info bar */}
-              <div className="flex items-center justify-between rounded-lg bg-white/[0.02] px-4 py-2.5 border border-white/[0.04]">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 rounded-lg bg-white/[0.02] px-4 py-2.5 border border-white/[0.04]">
                 <p className="text-[11px] text-white/30">{t("app.pwn.disclaimer")}</p>
                 <div className="flex items-center gap-3">
                   {["Nmap", "Nuclei", "SSLyze", "DAST"].map((tool) => (
@@ -349,7 +351,7 @@ function PhaseTimeline({ currentPhase }: { currentPhase: string }) {
   const phaseIndex = PHASES.indexOf(currentPhase as (typeof PHASES)[number]);
 
   return (
-    <div className="mt-8 flex items-center gap-1">
+    <div className="mt-8 flex items-center gap-0.5 sm:gap-1">
       {PHASES.map((phase, i) => {
         const info = PHASE_ICONS[phase];
         const isPast = i < phaseIndex;
@@ -365,7 +367,7 @@ function PhaseTimeline({ currentPhase }: { currentPhase: string }) {
               }`} />
               <div className="relative shrink-0">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300 ${
+                  className={`flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl transition-all duration-300 ${
                     isPast
                       ? "bg-(--success)/15 border border-(--success)/30"
                       : isActive
@@ -399,7 +401,7 @@ function PhaseTimeline({ currentPhase }: { currentPhase: string }) {
               }`} />
             </div>
             <span
-              className={`text-xs font-semibold transition-colors ${
+              className={`text-[10px] sm:text-xs font-semibold transition-colors ${
                 isPast
                   ? "text-emerald-400"
                   : isActive

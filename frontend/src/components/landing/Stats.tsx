@@ -23,9 +23,9 @@ export default function Stats() {
                 </span>
               </h2>
             </div>
-            <div className='flex-col md:flex md:flex-row justify-center items-center text-center'>
-              <div className='relative 2xl:px-24 px-16 md:py-8 py-4'>
-                <h2 ref={ref} className='2xl:text-9xl md:text-7xl text-5xl'>
+            <div className='flex flex-col md:flex-row justify-center items-center text-center'>
+              <div className='relative 2xl:px-24 px-8 sm:px-16 md:py-8 py-4'>
+                <h2 ref={ref} className='2xl:text-9xl md:text-7xl text-4xl sm:text-5xl'>
                   {inView ? <CountUp start={0} end={10} duration={3} /> : '0'}
                 </h2>
                 <p className='mt-2 text-white/60'>
@@ -33,8 +33,8 @@ export default function Stats() {
                 </p>
                 <div className='hidden md:block absolute right-0 top-1/2 transform -translate-y-1/2 h-28 w-px bg-white/10' />
               </div>
-              <div className='relative 2xl:px-24 px-16 md:py-8 py-4'>
-                <h2 className='2xl:text-9xl md:text-7xl text-5xl'>
+              <div className='relative 2xl:px-24 px-8 sm:px-16 md:py-8 py-4'>
+                <h2 className='2xl:text-9xl md:text-7xl text-4xl sm:text-5xl'>
                   {inView ? <CountUp start={0} end={7} duration={3} /> : '0'}
                 </h2>
                 <p className='mt-2 text-white/60'>
@@ -42,8 +42,8 @@ export default function Stats() {
                 </p>
                 <div className='hidden md:block absolute right-0 top-1/2 transform -translate-y-1/2 h-28 w-px bg-white/10' />
               </div>
-              <div className='relative 2xl:px-24 px-16 md:py-8 py-4'>
-                <h2 className='2xl:text-9xl md:text-7xl text-5xl'>
+              <div className='relative 2xl:px-24 px-8 sm:px-16 md:py-8 py-4'>
+                <h2 className='2xl:text-9xl md:text-7xl text-4xl sm:text-5xl'>
                   <sup>+</sup>
                   {inView ? <CountUp start={0} end={15} duration={3} /> : '0'}
                 </h2>

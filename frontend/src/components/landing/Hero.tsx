@@ -28,7 +28,7 @@ export default function Hero() {
                   {t('landing.hero.titleHighlight')}
                 </span>
               </h1>
-              <p className='max-w-38 text-white/60'>
+              <p className='max-w-38 text-white/60 px-4 sm:px-0'>
                 {t('landing.hero.subtitle')}
               </p>
             </motion.div>

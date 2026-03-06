@@ -333,25 +333,25 @@ export default function ScanDetailPage({ params }: PageProps) {
     <div className="flex flex-col gap-6">
       <Toaster position="top-right" />
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/scans" className="text-(--text-muted) hover:text-(--text) transition-colors">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4 min-w-0">
+          <Link href="/scans" className="text-(--text-muted) hover:text-(--text) transition-colors shrink-0">
             <span className="material-symbols-outlined text-xl" aria-hidden>arrow_back</span>
           </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-(--text)">{name}</h1>
-            <p className="text-xs text-(--text-muted) mt-0.5">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-(--text) truncate">{name}</h1>
+            <p className="text-xs text-(--text-muted) mt-0.5 truncate">
               {scan.source_url || scan.source_type.toUpperCase()} &middot; {new Date(scan.created_at).toLocaleString()}
             </p>
           </div>
           <ScanStatusBadge status={scan.status} />
           {!isTerminal && (
-            <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-blue-500/30 border-t-blue-400" aria-label="Polling" />
+            <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-blue-500/30 border-t-blue-400 shrink-0" aria-label="Polling" />
           )}
         </div>
 
         {scan.status === "completed" && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               type="button"
               onClick={async () => {
@@ -494,7 +494,7 @@ export default function ScanDetailPage({ params }: PageProps) {
                 </span>
               )}
             </div>
-            <div className="grid gap-4 sm:grid-cols-5">
+            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
               {[
                 { label: t("app.scanDetail.total"), value: scan.total_findings, color: "text-(--text)" },
                 { label: t("app.scanDetail.critical"), value: scan.critical_count, color: "text-(--critical)" },
@@ -523,7 +523,7 @@ export default function ScanDetailPage({ params }: PageProps) {
           {/* Detected Vulnerabilities heading + filters */}
           <section className="rounded-xl border border-(--border) bg-(--bg-card) overflow-hidden">
             <div className="border-b border-(--border) px-6 py-4">
-              <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <h2 className="text-lg font-semibold text-(--text)">{t("app.scanDetail.detectedVulnerabilities")}</h2>
                 <div className="flex items-end gap-3 flex-wrap">
                   <FilterDropdown
@@ -581,35 +581,35 @@ export default function ScanDetailPage({ params }: PageProps) {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-(--border) text-left text-[10px] font-semibold uppercase tracking-wider text-(--text-muted)">
-                      <th className="px-6 py-3">{t("app.scanDetail.severity")}</th>
-                      <th className="px-6 py-3">{t("app.scanDetail.vulnerability")}</th>
-                      <th className="px-6 py-3">{t("app.scanDetail.tool")}</th>
-                      <th className="px-6 py-3">{t("app.scanDetail.filePath")}</th>
+                      <th className="px-4 sm:px-6 py-3">{t("app.scanDetail.severity")}</th>
+                      <th className="px-4 sm:px-6 py-3">{t("app.scanDetail.vulnerability")}</th>
+                      <th className="hidden md:table-cell px-6 py-3">{t("app.scanDetail.tool")}</th>
+                      <th className="hidden lg:table-cell px-6 py-3">{t("app.scanDetail.filePath")}</th>
                       <th className="px-4 py-3">Fix</th>
                     </tr>
                   </thead>
                   <tbody>
                     {findings.map((f) => (
                       <tr key={f.id} className={`border-b border-(--border) transition-colors hover:bg-white/5 ${f.has_fix ? "bg-green-500/5" : ""}`}>
-                        <td className="py-3 pl-6">
+                        <td className="py-3 pl-4 sm:pl-6">
                           <Link href={`/scans/${id}/findings/${f.id}`} className="block">
                             <SeverityBadge severity={f.severity} />
                           </Link>
                         </td>
-                        <td className="px-6 py-3">
+                        <td className="px-4 sm:px-6 py-3">
                           <Link href={`/scans/${id}/findings/${f.id}`} className="block">
                             <p className="font-medium text-(--text)">{f.title}</p>
                             <p className="mt-0.5 text-xs text-(--text-muted)">{OWASP_LABELS[f.owasp_category] ?? f.owasp_category}</p>
                           </Link>
                         </td>
-                        <td className="px-6 py-3">
+                        <td className="hidden md:table-cell px-6 py-3">
                           <Link href={`/scans/${id}/findings/${f.id}`} className="block text-(--text-muted)">
                             {TOOL_LABELS[f.tool] ?? f.tool}
                           </Link>
                         </td>
-                        <td className="px-6 py-3">
+                        <td className="hidden lg:table-cell px-6 py-3">
                           <Link href={`/scans/${id}/findings/${f.id}`} className="block">
-                            <span className="font-mono text-xs text-(--text-muted)">
+                            <span className="font-mono text-xs text-(--text-muted) break-all">
                               {f.file_path}
                               {f.line_start && <span className="text-(--accent)">:{f.line_start}</span>}
                             </span>

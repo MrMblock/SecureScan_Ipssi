@@ -75,7 +75,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-2xl font-bold text-(--text)">{t("app.dashboard.title")}</h1>
+      <h1 className="text-xl sm:text-2xl font-bold text-(--text)">{t("app.dashboard.title")}</h1>
       <p className="mt-3 text-sm leading-relaxed text-(--text-muted)">
         {t("app.dashboard.subtitle")}
       </p>
@@ -162,10 +162,10 @@ export default function DashboardPage() {
                   <th className="pb-4 pl-6 pr-4 font-medium text-(--text)">
                     {t("app.dashboard.projectName")}
                   </th>
-                  <th className="pb-4 pr-4 font-medium text-(--text)">
+                  <th className="hidden md:table-cell pb-4 pr-4 font-medium text-(--text)">
                     {t("app.dashboard.repository")}
                   </th>
-                  <th className="pb-4 pr-4 font-medium text-(--text)">{t("app.dashboard.date")}</th>
+                  <th className="hidden sm:table-cell pb-4 pr-4 font-medium text-(--text)">{t("app.dashboard.date")}</th>
                   <th className="pb-4 pr-4 font-medium text-(--text)">{t("app.dashboard.status")}</th>
                   <th className="pb-4 pr-6 font-medium text-(--text)">{t("app.dashboard.actions")}</th>
                 </tr>
@@ -181,10 +181,10 @@ export default function DashboardPage() {
                   recentScans.slice(0, 5).map((scan) => (
                     <tr key={scan.id} className="border-b border-(--border) hover:bg-white/5 transition-colors">
                       <td className="py-3 pl-6 pr-4 font-medium">{projectName(scan)}</td>
-                      <td className="py-3 pr-4 font-mono text-xs text-(--text-muted) max-w-[200px] truncate">
+                      <td className="hidden md:table-cell py-3 pr-4 font-mono text-xs text-(--text-muted) max-w-[200px] truncate">
                         {scan.source_url || scan.source_type}
                       </td>
-                      <td className="py-3 pr-4 text-xs text-(--text-muted)">
+                      <td className="hidden sm:table-cell py-3 pr-4 text-xs text-(--text-muted)">
                         {new Date(scan.created_at).toLocaleDateString()}
                       </td>
                       <td className={`py-3 pr-4 text-xs font-medium ${statusColors[scan.status] ?? "text-(--text-muted)"}`}>
