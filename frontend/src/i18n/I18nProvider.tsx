@@ -12,7 +12,6 @@ import en from "./locales/en.json";
 
 export type Locale = "fr" | "en";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const translations: Record<Locale, any> = { fr, en };
 
 export interface I18nContextValue {

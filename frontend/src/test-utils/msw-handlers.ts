@@ -45,6 +45,18 @@ export const handlers = [
     return HttpResponse.json({ id: "new-scan-id" });
   }),
 
+  // Current user (needed by FindingFixPanel to check AI key)
+  http.get("/api/accounts/me/", () => {
+    return HttpResponse.json({
+      id: 1,
+      email: "test@example.com",
+      ai_provider: "gemini",
+      gemini_api_key: "test-key",
+      openai_api_key: "",
+      anthropic_api_key: "",
+    });
+  }),
+
   // Fix endpoint
   http.post("/api/scanner/findings/:id/fix/", () => {
     return HttpResponse.json({

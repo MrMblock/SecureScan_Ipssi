@@ -22,11 +22,11 @@ describe("ScanProgressBar", () => {
     expect(bar.style.width).toBe("100%");
   });
 
-  it("shows intermediate progress for scanning (index 3 of 5)", () => {
+  it("shows intermediate progress for scanning (index 4 of 7)", () => {
     const { container } = render(<ScanProgressBar status="scanning" />);
     const bar = container.querySelector("[style]") as HTMLElement;
-    // scanning is index 3 out of 5 steps → 60%
-    expect(bar.style.width).toBe("60%");
+    // scanning is index 4 out of 7 steps (0-6) → 4/6 ≈ 66.67%
+    expect(bar.style.width).toBe(`${(4 / 6) * 100}%`);
   });
 
   it("applies red color for failed status", () => {

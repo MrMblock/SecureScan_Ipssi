@@ -190,7 +190,6 @@ function CodeViewer({
               lineNumber >= highlightStart &&
               lineNumber <= highlightEnd;
           return {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             "data-line": lineNumber as any,
             style: {
               display: "block" as const,

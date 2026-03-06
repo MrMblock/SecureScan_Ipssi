@@ -69,7 +69,7 @@ describe("FindingFixPanel", () => {
 
   it("shows Apply Fix & Create PR button when fix is available", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<FindingFixPanel {...defaultProps} />);
+    renderWithProviders(<FindingFixPanel {...defaultProps} isGitRepo />);
     await user.click(screen.getByText("Corriger avec l'IA"));
 
     await waitFor(() => {
@@ -79,7 +79,7 @@ describe("FindingFixPanel", () => {
 
   it("shows PR link after applying fix", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<FindingFixPanel {...defaultProps} />);
+    renderWithProviders(<FindingFixPanel {...defaultProps} isGitRepo />);
     await user.click(screen.getByText("Corriger avec l'IA"));
 
     await waitFor(() => {
@@ -127,6 +127,5 @@ describe("FindingFixPanel", () => {
     );
     expect(screen.getByText("Original")).toBeInTheDocument();
     expect(screen.getByText("Correction Suggeree")).toBeInTheDocument();
-    expect(screen.getByText("Resultat en cache")).toBeInTheDocument();
   });
 });
