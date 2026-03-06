@@ -29,6 +29,7 @@ beautifulsoup4 = "^4.12"
 lxml = "^5.1"
 python-nmap = "^0.7"
 sslyze = "^6.0"
+python-dotenv = "^1.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.6"

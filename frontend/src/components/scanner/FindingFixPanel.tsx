@@ -113,7 +113,7 @@ export default function FindingFixPanel({
       <div className="mt-3 flex flex-col items-start gap-2">
         <button
           type="button"
-          onClick={requestFix}
+          onClick={() => requestFix()}
           className="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-purple-700 transition-colors"
         >
           <span className="material-symbols-outlined text-lg" aria-hidden>

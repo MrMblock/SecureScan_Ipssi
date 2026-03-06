@@ -25,6 +25,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
+    volumes:
+      - media_data:/app/media
+      - scan_workspaces:/workspaces
     env_file:
       - .env
     depends_on:
@@ -37,7 +40,10 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
-    command: celery -A config worker -l warning
+    command: celery -A config worker -l warning --concurrency=4 -Q default,scans
+    volumes:
+      - media_data:/app/media
+      - scan_workspaces:/workspaces
     env_file:
       - .env
     depends_on:
@@ -50,6 +56,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_GITHUB_CLIENT_ID: ${NEXT_PUBLIC_GITHUB_CLIENT_ID}
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+        NEXT_PUBLIC_REDIRECT_URI: ${NEXT_PUBLIC_REDIRECT_URI}
     env_file:
       - .env
     depends_on:
@@ -60,11 +71,12 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
+      - "127.0.0.1:8090:80"
     depends_on:
       - frontend
       - backend
 
 volumes:
   postgres_data:
+  media_data:
+  scan_workspaces:
